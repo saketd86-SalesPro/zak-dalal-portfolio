@@ -1,676 +1,1176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>Zak Dalal · SMB AE · HiBob</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Zak Dalal — SMB Account Executive · HiBob</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <style>
-/* ─────────────────────────────────────
-   RESET + TOKENS
-───────────────────────────────────── */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#070707;
-  --dark:#0d0d0d;
-  --card:#141414;
-  --border:#222;
-  --o:#FF5C6A;
-  --a:#9B5DE5;
-  --w:#EDE8DF;
-  --g:#888;
-  --fd:'Bebas Neue',sans-serif;
-  --fb:'DM Sans',sans-serif;
-  --fm:'DM Mono',monospace;
-}
+  :root {
+    --bg: #0D0D0D;
+    --bg2: #161616;
+    --bg3: #2A2A2A;
+    --orange: #FF5C00;
+    --amber: #FFB347;
+    --white: #FFFFFF;
+    --muted: #AAAAAA;
+    --light: #CCCCCC;
+  }
 
-/* ─────────────────────────────────────
-   VIEWPORT LOCK
-───────────────────────────────────── */
-html,body{
-  width:100%;height:100%;
-  overflow:hidden;
-  background:var(--bg);
-  color:var(--w);
-  font-family:var(--fb);
-  cursor:crosshair;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ─────────────────────────────────────
-   SCANLINE OVERLAY
-───────────────────────────────────── */
-html::before{
-  content:'';
-  position:fixed;inset:0;z-index:9999;
-  pointer-events:none;
-  background:repeating-linear-gradient(
-    0deg,
-    transparent 0px,transparent 2px,
-    rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px
-  );
-}
+  html { scroll-behavior: smooth; }
 
-/* ─────────────────────────────────────
-   PARTICLES CANVAS
-───────────────────────────────────── */
-#cv{position:fixed;inset:0;z-index:0;pointer-events:none;}
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
 
-/* ─────────────────────────────────────
-   DATA STREAM
-───────────────────────────────────── */
-#ds{
-  position:fixed;right:0;top:0;bottom:0;width:18px;
-  z-index:100;overflow:hidden;pointer-events:none;
-  display:flex;flex-direction:column;
-}
-.dsc{
-  font-family:var(--fm);font-size:7px;
-  color:rgba(255,92,106,.08);
-  line-height:1.7;white-space:pre;
-  animation:fall linear infinite;
-}
-@keyframes fall{from{transform:translateY(-100%)}to{transform:translateY(100vh)}}
+  /* CURSOR */
+  .cursor {
+    position: fixed;
+    width: 10px; height: 10px;
+    background: var(--orange);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(255,92,0,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.25s ease, width 0.2s ease, height 0.2s ease;
+  }
 
-/* ─────────────────────────────────────
-   PROGRESS + CLOCK
-───────────────────────────────────── */
-#prog{
-  position:fixed;top:0;left:0;height:2px;
-  background:linear-gradient(90deg,var(--o),var(--a));
-  box-shadow:0 0 8px rgba(255,92,106,.5);
-  transition:width .5s cubic-bezier(.4,0,.2,1);
-  z-index:500;
-}
-#clk{
-  position:fixed;top:14px;right:26px;
-  font-family:var(--fm);font-size:8px;
-  color:#282828;letter-spacing:2px;
-  z-index:500;pointer-events:none;
-}
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.5rem 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(13,13,13,0.95), transparent);
+    backdrop-filter: blur(2px);
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--orange); }
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -3px; left: 0;
+    width: 0; height: 1px;
+    background: var(--orange);
+    transition: width 0.3s ease;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-links a:hover::after { width: 100%; }
 
-/* ─────────────────────────────────────
-   BOOT SCREEN
-───────────────────────────────────── */
-#boot{
-  position:fixed;inset:0;z-index:8000;
-  background:var(--bg);
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  font-family:var(--fm);
-  transition:opacity .4s ease;
-}
-#boot.out{opacity:0;pointer-events:none;}
-.b-logo{
-  font-family:var(--fd);font-size:72px;
-  color:var(--o);letter-spacing:4px;
-  text-shadow:0 0 30px rgba(255,92,106,.4);
-  margin-bottom:8px;
-}
-.b-sub{font-size:8px;letter-spacing:5px;color:#2a2a2a;margin-bottom:32px;}
-.b-wrap{width:240px;height:1px;background:#1a1a1a;margin-bottom:20px;}
-.b-fill{height:100%;width:0;background:linear-gradient(90deg,var(--o),var(--a));box-shadow:0 0 6px rgba(255,92,106,.5);}
-.b-lines{width:260px;font-size:8px;color:#222;letter-spacing:2px;line-height:2.2;}
-.bl{opacity:0;transition:opacity .15s;}
+  /* SCROLL INDICATOR */
+  .scroll-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--orange);
+    z-index: 200;
+    transition: width 0.1s linear;
+  }
 
-/* ─────────────────────────────────────
-   DECK FRAMEWORK
-───────────────────────────────────── */
-#deck{position:fixed;inset:0;z-index:10;overflow:hidden;}
-.slide{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden;}
-.slide.active{display:flex;}
-.slide.enter-fwd{animation:efwd .38s cubic-bezier(.4,0,.2,1) both;}
-.slide.enter-bwd{animation:ebwd .38s cubic-bezier(.4,0,.2,1) both;}
-@keyframes efwd{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:none}}
-@keyframes ebwd{from{opacity:0;transform:translateX(-36px)}to{opacity:1;transform:none}}
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-left {
+    padding: 12rem 4rem 6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(5rem, 8vw, 9rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    animation: splitIn 1s 0.4s forwards;
+  }
+  .hero-name .line1 { display: block; color: var(--white); }
+  .hero-name .line2 { display: block; color: var(--orange); }
+  .hero-role {
+    margin-top: 2rem;
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+  .hero-role strong { color: var(--light); font-weight: 500; }
+  .hero-tagline {
+    margin-top: 2.5rem;
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: var(--light);
+    line-height: 1.6;
+    max-width: 440px;
+    opacity: 0;
+    animation: fadeUp 0.8s 1s forwards;
+  }
+  .hero-cta-row {
+    margin-top: 3rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.2s forwards;
+  }
+  .btn-primary {
+    background: var(--orange);
+    color: var(--white);
+    padding: 0.85rem 2rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s, transform 0.2s;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  }
+  .btn-primary:hover { background: #FF7A2E; transform: translateY(-2px); }
+  .btn-secondary {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+    padding-bottom: 2px;
+  }
+  .btn-secondary:hover { color: var(--white); border-color: var(--white); }
 
-/* ─────────────────────────────────────
-   NAV
-───────────────────────────────────── */
-#ndots{
-  position:fixed;bottom:20px;left:50%;
-  transform:translateX(-50%);
-  display:flex;gap:7px;align-items:center;
-  z-index:600;
-}
-.nd{
-  width:5px;height:5px;border-radius:50%;
-  background:#222;cursor:crosshair;
-  transition:background .2s,transform .2s,box-shadow .2s;
-}
-.nd.on{background:var(--o);transform:scale(1.5);box-shadow:0 0 8px rgba(255,92,106,.5);}
-#narr{position:fixed;bottom:14px;right:28px;display:flex;gap:6px;z-index:600;}
-.na{
-  width:32px;height:32px;border-radius:2px;
-  border:1px solid #1e1e1e;background:none;
-  color:#444;font-size:12px;cursor:crosshair;
-  display:flex;align-items:center;justify-content:center;
-  transition:border-color .18s,color .18s,box-shadow .18s;
-}
-.na:hover{border-color:var(--o);color:var(--o);box-shadow:0 0 8px rgba(255,92,106,.3);}
-#nnum{
-  position:fixed;bottom:26px;left:28px;
-  font-family:var(--fm);font-size:8px;
-  color:#252525;letter-spacing:3px;z-index:600;
-}
+  /* Hero right — stats panel */
+  .hero-right {
+    padding: 12rem 4rem 6rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+  }
+  .hero-stats-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.4s forwards;
+  }
+  .hero-stat-item {
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    opacity: 0;
+  }
+  .hero-stat-item:last-child { border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .stat-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 5vw, 5.5rem);
+    line-height: 1;
+    color: var(--white);
+    min-width: 160px;
+  }
+  .stat-number .orange { color: var(--orange); }
+  .stat-meta { display: flex; flex-direction: column; gap: 0.2rem; }
+  .stat-label { font-size: 0.85rem; font-weight: 500; color: var(--light); }
+  .stat-sub { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.05em; }
 
-/* ─────────────────────────────────────
-   SHARED ELEMENTS
-───────────────────────────────────── */
-.ey{
-  font-family:var(--fm);font-size:11px;
-  letter-spacing:3px;color:var(--o);
-  border:1px solid rgba(255,92,106,.35);
-  display:inline-flex;align-items:center;
-  padding:3px 9px;margin-bottom:8px;
-  position:relative;overflow:hidden;
-  text-shadow:0 0 8px rgba(255,92,106,.4);
-}
-.ey::after{
-  content:'';position:absolute;
-  top:0;left:-100%;width:60%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,92,106,.1),transparent);
-  animation:sweep 3s linear infinite;
-}
-@keyframes sweep{from{left:-60%}to{left:140%}}
-.cur{display:inline-block;width:5px;height:8px;background:var(--o);margin-left:5px;animation:blink .8s step-end infinite;}
-@keyframes blink{50%{opacity:0}}
-.sh{font-family:var(--fd);font-size:40px;line-height:1;color:var(--w);letter-spacing:.5px;}
-.cl{padding:28px 48px 52px;display:flex;flex-direction:column;}
-.cl .hd{flex-shrink:0;margin-bottom:13px;}
-.cl .bd{flex:1;min-height:0;display:flex;flex-direction:column;}
-.r1{animation:rv .45s .08s both}
-.r2{animation:rv .45s .16s both}
-.r3{animation:rv .45s .24s both}
-.r4{animation:rv .45s .32s both}
-.r5{animation:rv .45s .38s both}
-.r6{animation:rv .45s .44s both}
-@keyframes rv{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  /* diagonal divider */
+  .diagonal-divider {
+    height: 120px;
+    background: var(--bg2);
+    clip-path: polygon(0 0, 100% 40%, 100% 100%, 0 100%);
+    margin-top: -1px;
+  }
+  .diagonal-divider-reverse {
+    height: 120px;
+    background: var(--bg);
+    clip-path: polygon(0 0, 100% 0, 100% 60%, 0 100%);
+    margin-top: -1px;
+  }
 
-/* ─────────────────────────────────────
-   CARDS
-───────────────────────────────────── */
-.card{background:var(--card);border:1px solid var(--border);position:relative;overflow:hidden;}
-.card::before{content:'';position:absolute;top:0;left:0;width:12px;height:12px;border-top:2px solid var(--o);border-left:2px solid var(--o);transition:width .2s,height .2s;}
-.card::after{content:'';position:absolute;bottom:0;right:0;width:12px;height:12px;border-bottom:2px solid var(--o);border-right:2px solid var(--o);transition:width .2s,height .2s;}
-.card.am::before,.card.am::after{border-color:var(--a);}
-.card:hover::before,.card:hover::after{width:20px;height:20px;}
-.card:hover .scan{animation:cscan .5s ease forwards;}
-.scan{position:absolute;left:0;right:0;top:0;height:1px;opacity:0;pointer-events:none;z-index:2;background:rgba(255,92,106,.2);}
-.card.am:hover .scan{background:rgba(155,93,229,.2);}
-@keyframes cscan{from{top:0;opacity:1}to{top:100%;opacity:0}}
-.cp{padding:16px;}
-.ci{font-size:15px;margin-bottom:5px;}
-.ct{font-weight:700;font-size:13px;color:var(--w);margin-bottom:5px;line-height:1.3;}
-.cb{font-size:12px;color:var(--g);line-height:1.65;}
+  /* SECTION WRAPPER */
+  section { position: relative; }
+  .section-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 6rem 4rem;
+  }
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .section-label::before {
+    content: '';
+    display: inline-block;
+    width: 2rem;
+    height: 1px;
+    background: var(--orange);
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 5vw, 5rem);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    margin-bottom: 1rem;
+  }
+  .section-subtitle {
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 600px;
+    line-height: 1.7;
+    margin-bottom: 4rem;
+  }
 
-/* ─────────────────────────────────────
-   S1 — TITLE
-───────────────────────────────────── */
-#s1{background:var(--bg);justify-content:flex-end;padding-bottom:58px;}
-#s1::before{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(rgba(255,92,106,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,92,106,.025) 1px,transparent 1px);
-  background-size:56px 56px;animation:gpan 18s linear infinite;
-}
-@keyframes gpan{from{background-position:0 0}to{background-position:56px 56px}}
-#s1 .wm{position:absolute;right:-4vw;top:-6vh;font-family:var(--fd);font-size:42vw;line-height:1;color:#0e0e0e;pointer-events:none;user-select:none;letter-spacing:-6px;}
-#s1 .lb{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--o);box-shadow:0 0 20px rgba(255,92,106,.3);}
-#s1 .tb{position:absolute;top:0;right:0;width:20%;height:3px;background:linear-gradient(90deg,transparent,var(--o));}
-#s1 .inn{position:relative;z-index:1;padding:0 60px;display:flex;flex-direction:column;}
-#s1 .nm{font-family:var(--fd);font-size:clamp(50px,8.5vw,102px);line-height:.88;letter-spacing:2px;color:var(--w);margin-bottom:11px;}
-#s1 .nm.glitch{animation:glitch 4.5s ease .3s 1;}
-@keyframes glitch{
-  0%,86%,100%{clip-path:none;transform:none;color:var(--w)}
-  87%{clip-path:polygon(0 15%,100% 15%,100% 35%,0 35%);transform:translateX(-4px)}
-  88%{clip-path:polygon(0 55%,100% 55%,100% 75%,0 75%);transform:translateX(4px)}
-  89%{clip-path:none;transform:none}
-  90%{clip-path:polygon(0 5%,100% 5%,100% 25%,0 25%);transform:translateX(-2px);color:var(--o)}
-  91%{clip-path:none;transform:none;color:var(--w)}
-}
-#s1 .ro{font-family:var(--fm);font-size:12px;letter-spacing:4px;color:var(--o);margin-bottom:13px;text-shadow:0 0 8px rgba(255,92,106,.4);}
-#s1 .rl{width:180px;height:1px;background:linear-gradient(90deg,var(--o),transparent);margin-bottom:12px;}
-#s1 .tg{font-size:15px;color:var(--g);font-style:italic;max-width:480px;line-height:1.6;margin-bottom:28px;}
-.stats{display:flex;gap:2px;}
-.st{flex:1;background:var(--card);border-top:2px solid var(--o);padding:10px 8px 8px;position:relative;overflow:hidden;}
-.st.a{border-top-color:var(--a);}
-.st .v{font-family:var(--fd);font-size:clamp(22px,2.8vw,34px);color:var(--o);line-height:1;margin-bottom:3px;text-shadow:0 0 8px rgba(255,92,106,.4);}
-.st.a .v{color:var(--a);text-shadow:0 0 8px rgba(155,93,229,.4);}
-.st .l{font-size:10px;color:var(--g);line-height:1.45;}
+  /* WATERMARK */
+  .watermark {
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(8rem, 20vw, 18rem);
+    color: rgba(255,255,255,0.025);
+    letter-spacing: 0.05em;
+    pointer-events: none;
+    white-space: nowrap;
+    user-select: none;
+  }
 
-/* ─────────────────────────────────────
-   S2 — WHY HIBOB
-───────────────────────────────────── */
-#s2{background:var(--dark);}
-#s2::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle,#1e1e1e 1px,transparent 1px);background-size:26px 26px;}
-#s2 .gr{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:6px;flex:1;position:relative;z-index:1;}
+  /* WHY HIBOB */
+  #why { background: var(--bg2); }
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    background: rgba(255,255,255,0.05);
+  }
+  .why-card {
+    background: var(--bg2);
+    padding: 3rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .why-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 0;
+    background: var(--orange);
+    transition: height 0.4s ease;
+  }
+  .why-card:hover { background: #1C1C1C; }
+  .why-card:hover::before { height: 100%; }
+  .why-card-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    color: rgba(255,92,0,0.15);
+    line-height: 1;
+    margin-bottom: 1rem;
+    transition: color 0.3s;
+  }
+  .why-card:hover .why-card-number { color: rgba(255,92,0,0.3); }
+  .why-card-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--white);
+    line-height: 1.3;
+  }
+  .why-card-body {
+    font-size: 0.875rem;
+    color: var(--muted);
+    line-height: 1.75;
+    font-weight: 300;
+  }
 
-/* ─────────────────────────────────────
-   S3 — FIT TABLE
-───────────────────────────────────── */
-#s3{background:var(--bg);}
-table{width:100%;border-collapse:collapse;table-layout:fixed;}
-thead th{padding:10px 14px;font-family:var(--fm);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;}
-.th-r{background:var(--o);color:var(--bg);text-align:left;width:41%;}
-.th-a{background:var(--a);color:var(--w);width:5%;text-align:center;}
-.th-d{background:var(--card);color:var(--o);text-align:left;}
-tbody tr:nth-child(odd) td{background:#0b0b0b;}
-tbody tr:nth-child(even) td{background:#0f0f0f;}
-tbody tr:hover td{background:#181818 !important;}
-tbody td{padding:10px 14px;font-size:12px;line-height:1.55;vertical-align:middle;border-bottom:1px solid #181818;}
-.tr{color:#666;}
-.ta{color:var(--a);font-weight:700;font-size:13px;text-align:center;text-shadow:0 0 6px rgba(155,93,229,.4);}
-.td{color:var(--w);font-weight:500;}
+  /* THE FIT */
+  #fit { background: var(--bg); }
+  .fit-table-wrapper { overflow-x: auto; }
+  .fit-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .fit-table thead tr {
+    border-bottom: 1px solid rgba(255,92,0,0.3);
+  }
+  .fit-table th {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--orange);
+    padding: 1rem 1.5rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .fit-table td {
+    padding: 1.25rem 1.5rem;
+    font-size: 0.9rem;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--light);
+    line-height: 1.5;
+  }
+  .fit-table tr:hover td { background: rgba(255,92,0,0.04); }
+  .fit-table td:first-child { color: var(--muted); font-size: 0.85rem; }
+  .fit-table td:last-child { color: var(--light); font-size: 0.85rem; }
+  .check {
+    display: inline-block;
+    width: 24px; height: 24px;
+    background: rgba(255,92,0,0.15);
+    border: 1px solid rgba(255,92,0,0.4);
+    border-radius: 50%;
+    font-size: 0.75rem;
+    text-align: center;
+    line-height: 24px;
+    color: var(--orange);
+  }
 
-/* ─────────────────────────────────────
-   S4 — PROOF
-───────────────────────────────────── */
-#s4{background:var(--bg);}
-#s4 .gr{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;flex:1;}
-.deal{background:var(--card);border:1px solid var(--border);padding:11px;display:flex;flex-direction:column;position:relative;overflow:hidden;}
-.deal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
-.deal.o::before{background:linear-gradient(90deg,var(--o),var(--a));box-shadow:0 0 8px rgba(255,92,106,.3);}
-.deal.a::before{background:linear-gradient(90deg,var(--a),var(--o));box-shadow:0 0 8px rgba(155,93,229,.3);}
-.dbg{position:absolute;top:7px;right:7px;padding:2px 5px;font-family:var(--fm);font-size:8px;font-weight:700;letter-spacing:.5px;line-height:1.5;text-align:center;}
-.deal.o .dbg{background:var(--o);color:var(--bg);}
-.deal.a .dbg{background:var(--a);color:var(--w);}
-.dco{font-family:var(--fd);font-size:16px;color:var(--w);line-height:1;margin-bottom:1px;}
-.dyr{font-family:var(--fm);font-size:9px;color:var(--g);margin-bottom:6px;}
-.dnum{font-family:var(--fd);font-size:30px;line-height:1;margin-bottom:6px;}
-.deal.o .dnum{color:var(--o);text-shadow:0 0 8px rgba(255,92,106,.4);}
-.deal.a .dnum{color:var(--a);text-shadow:0 0 8px rgba(155,93,229,.4);}
-.drl{height:1px;background:linear-gradient(90deg,var(--border),transparent);margin-bottom:6px;flex-shrink:0;}
-.pb{margin-bottom:5px;}
-.pl{font-family:var(--fm);font-size:9px;letter-spacing:2px;margin-bottom:2px;}
-.deal.o .pl{color:var(--o);}
-.deal.a .pl{color:var(--a);}
-.pt{font-size:11px;color:var(--g);line-height:1.5;}
+  /* THE PROOF */
+  #proof { background: var(--bg2); }
+  .proof-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5px;
+    background: rgba(255,255,255,0.05);
+  }
+  .proof-card {
+    background: var(--bg2);
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .proof-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+  }
+  .proof-company {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    letter-spacing: 0.05em;
+    color: var(--white);
+  }
+  .proof-period {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    font-family: 'Space Mono', monospace;
+    padding-top: 0.5rem;
+  }
+  .proof-big-stat {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    color: var(--orange);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+  .proof-stat-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .proof-how-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--orange);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .proof-how-text {
+    font-size: 0.875rem;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 1.25rem;
+  }
+  .proof-result-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--amber);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .proof-result-text {
+    font-size: 0.875rem;
+    color: var(--light);
+    line-height: 1.7;
+  }
+  .proof-card-tag {
+    position: absolute;
+    top: 2rem; right: 2rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 0.3rem 0.8rem;
+  }
 
-/* ─────────────────────────────────────
-   S5 — BUILDING TORONTO
-───────────────────────────────────── */
-#s5{background:var(--dark);}
-#s5::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle,#1e1e1e 1px,transparent 1px);background-size:26px 26px;}
-#s5 .gr{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:6px;flex:1;position:relative;z-index:1;}
+  /* BUILDING THE OFFICE */
+  #build { background: var(--bg); }
+  .build-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+  .build-item {
+    position: relative;
+    padding: 2.5rem 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .build-item::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--orange);
+    transition: width 0.5s ease;
+  }
+  .build-item:hover::before { width: 3rem; }
+  .build-icon {
+    width: 40px; height: 40px;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .build-icon svg { width: 28px; height: 28px; stroke: var(--orange); fill: none; stroke-width: 1.5; }
+  .build-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.01em;
+  }
+  .build-body {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.75;
+    font-weight: 300;
+  }
 
-/* ─────────────────────────────────────
-   S6 — 90 DAYS
-───────────────────────────────────── */
-#s6{background:var(--bg);}
-#s6 .phs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;flex:1;}
-.ph{background:var(--card);border:1px solid var(--border);padding:13px;display:flex;flex-direction:column;position:relative;overflow:hidden;}
-.ph::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
-.ph.o::before{background:linear-gradient(90deg,var(--o),var(--a));box-shadow:0 0 8px rgba(255,92,106,.3);}
-.ph.a::before{background:linear-gradient(90deg,var(--a),var(--o));box-shadow:0 0 8px rgba(155,93,229,.3);}
-.ph::after{content:attr(data-n);position:absolute;right:-4px;bottom:-14px;font-family:var(--fd);font-size:90px;color:rgba(255,92,106,.025);line-height:1;pointer-events:none;user-select:none;}
-.ph.a::after{color:rgba(155,93,229,.025);}
-.phl{display:inline-block;font-family:var(--fm);font-size:9px;letter-spacing:2px;padding:2px 7px;margin-bottom:7px;color:var(--bg);flex-shrink:0;}
-.ph.o .phl{background:var(--o);}
-.ph.a .phl{background:var(--a);}
-.pht{font-family:var(--fd);font-size:18px;color:var(--w);line-height:1.1;margin-bottom:7px;flex-shrink:0;}
-.phr{height:1px;background:var(--border);margin-bottom:7px;flex-shrink:0;}
-.phl2{list-style:none;flex:1;overflow:hidden;}
-.phl2 li{font-size:12px;color:var(--g);line-height:1.6;margin-bottom:6px;padding-left:14px;position:relative;}
-.phl2 li::before{content:'→';position:absolute;left:0;font-size:10px;top:1px;}
-.ph.o .phl2 li::before{color:var(--o);}
-.ph.a .phl2 li::before{color:var(--a);}
+  /* 90 DAYS */
+  #days { background: var(--bg2); }
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    background: rgba(255,255,255,0.05);
+  }
+  .days-phase {
+    background: var(--bg2);
+    padding: 3rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .days-phase-header {
+    margin-bottom: 2rem;
+  }
+  .days-phase-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 0.5rem;
+    font-family: 'Space Mono', monospace;
+  }
+  .days-phase-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    letter-spacing: 0.05em;
+    color: var(--white);
+    line-height: 1;
+  }
+  .days-phase-sub {
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    margin-top: 0.4rem;
+  }
+  .days-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .days-list li {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.65;
+    padding-left: 1rem;
+    border-left: 2px solid rgba(255,255,255,0.07);
+    transition: border-color 0.2s;
+  }
+  .days-list li:hover { border-color: var(--orange); color: var(--light); }
 
-/* ─────────────────────────────────────
-   S7 — CLOSE
-───────────────────────────────────── */
-#s7{background:var(--bg);justify-content:center;align-items:flex-start;padding:0 64px;}
-#s7::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:65vw;height:55vh;background:radial-gradient(ellipse,rgba(255,92,106,.05) 0%,transparent 70%);pointer-events:none;}
-#s7 .rb{position:absolute;right:0;top:0;bottom:0;width:4px;background:var(--o);box-shadow:0 0 20px rgba(255,92,106,.3);}
-#s7 .bb{position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--o),var(--a));}
-#s7 .qt{font-family:var(--fd);font-size:clamp(24px,3.6vw,46px);line-height:1.05;color:var(--w);margin-bottom:22px;max-width:760px;position:relative;z-index:1;}
-#s7 .qt .hi{color:var(--o);text-shadow:0 0 10px rgba(255,92,106,.4);}
-#s7 .qr{width:220px;height:1px;background:linear-gradient(90deg,var(--o),transparent);margin-bottom:22px;position:relative;z-index:1;}
-.cst{display:flex;gap:6px;margin-bottom:22px;position:relative;z-index:1;}
-.cs{background:var(--card);border:1px solid var(--border);padding:12px 15px;min-width:175px;}
-.cs.o{border-top:2px solid var(--o);}
-.cs.a{border-top:2px solid var(--a);}
-.csv{font-family:var(--fd);font-size:16px;margin-bottom:3px;}
-.cs.o .csv{color:var(--o);text-shadow:0 0 8px rgba(255,92,106,.4);}
-.cs.a .csv{color:var(--a);text-shadow:0 0 8px rgba(155,93,229,.4);}
-.csl{font-size:11px;color:var(--g);line-height:1.5;}
-#s7 .ct{font-family:var(--fm);font-size:11px;color:#333;letter-spacing:1.5px;position:relative;z-index:1;}
+  /* CTA */
+  #contact {
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+  .contact-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 8rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+  }
+  .contact-quote {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.8rem, 4vw, 4.5rem);
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+  }
+  .contact-quote .orange { color: var(--orange); }
+  .contact-right {}
+  .contact-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+  .contact-badge {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border: 1px solid rgba(255,255,255,0.07);
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .contact-badge:hover { border-color: rgba(255,92,0,0.3); background: rgba(255,92,0,0.04); }
+  .contact-badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+  .contact-badge-text {
+    font-size: 0.85rem;
+    color: var(--light);
+    font-weight: 400;
+  }
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .contact-link {
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: color 0.2s;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: -0.02em;
+  }
+  .contact-link::before {
+    content: '→';
+    color: var(--orange);
+    font-size: 0.8rem;
+  }
+  .contact-link:hover { color: var(--white); }
+
+  /* FOOTER */
+  footer {
+    background: var(--bg);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 2rem 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+  .footer-name span { color: var(--orange); }
+  .footer-note {
+    font-size: 0.72rem;
+    color: rgba(170,170,170,0.4);
+    letter-spacing: 0.1em;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes splitIn {
+    from { opacity: 0; transform: translateY(40px) skewY(3deg); }
+    to   { opacity: 1; transform: translateY(0) skewY(0deg); }
+  }
+  @keyframes countUp {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* REVEAL ANIMATION */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+  .reveal-delay-5 { transition-delay: 0.5s; }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* STAT COUNTER */
+  .count-stat {
+    display: inline-block;
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 1.25rem 2rem; }
+    .nav-links { display: none; }
+    #hero { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    .hero-left { padding: 8rem 2rem 4rem; }
+    .section-inner { padding: 4rem 2rem; }
+    .why-grid, .proof-grid, .build-grid, .days-grid { grid-template-columns: 1fr; }
+    .contact-inner { grid-template-columns: 1fr; gap: 3rem; padding: 5rem 2rem; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; padding: 1.5rem 2rem; }
+  }
 </style>
 </head>
 <body>
 
-<!-- BOOT -->
-<div id="boot">
-  <div class="b-logo">HIBOB</div>
-  <div class="b-sub">CANDIDATE BRIEF // SMB ACCOUNT EXECUTIVE</div>
-  <div class="b-wrap"><div class="b-fill" id="bf"></div></div>
-  <div class="b-lines">
-    <div class="bl">// INITIALIZING CANDIDATE PROFILE...</div>
-    <div class="bl">// LOADING REVENUE DATA: $4M+ ARR...</div>
-    <div class="bl">// VERIFYING: 6-FIG CLOSE AT EVERY COMPANY...</div>
-    <div class="bl">// LOCATION: NORTH YORK · 20 MIN FROM OFFICE...</div>
-    <div class="bl">// AI TOOLS: CLAUDE + CHATGPT ONLINE...</div>
-    <div class="bl">// LAUNCHING DECK...</div>
-  </div>
-</div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="scroll-progress" id="scrollProgress"></div>
 
-<!-- AMBIENT -->
-<canvas id="cv"></canvas>
-<div id="ds"></div>
-<div id="prog" style="width:0"></div>
-<div id="clk"></div>
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">ZAK<span>.</span>DALAL</a>
+  <ul class="nav-links">
+    <li><a href="#why">Why HiBob</a></li>
+    <li><a href="#fit">The Fit</a></li>
+    <li><a href="#proof">Proof</a></li>
+    <li><a href="#build">90 Days</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
 
-<!-- DECK -->
-<div id="deck">
-
-<!-- S1 -->
-<div class="slide active" id="s1">
-  <div class="wm">HB</div>
-  <div class="lb"></div><div class="tb"></div>
-  <div class="inn">
-    <div class="nm r1">ZAK<br>DALAL</div>
-    <div class="ro r2">SMB ACCOUNT EXECUTIVE · HIBOB TORONTO<span class="cur"></span></div>
-    <div class="rl r3"></div>
-    <div class="tg r4">7 years closing SaaS deals.<br>$4M+ ARR. 105% quota. 97% retention.<br>Built to help grow the Toronto office.</div>
-    <div class="stats r5">
-      <div class="st"><div class="v" data-val="7" data-sfx="+">7+</div><div class="l">Years Full-Cycle<br>SaaS AE</div></div>
-      <div class="st"><div class="v" data-val="4" data-pfx="$" data-sfx="M+">$4M+</div><div class="l">ARR Portfolio<br>@ 105% Quota</div></div>
-      <div class="st a"><div class="v">6-Fig</div><div class="l">Closes at Every<br>Company</div></div>
-      <div class="st"><div class="v" data-val="97" data-sfx="%">97%</div><div class="l">Retention<br>60+ Accounts</div></div>
-      <div class="st a"><div class="v" data-val="40">40</div><div class="l">Locations From<br>1 Pilot Account</div></div>
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">SMB Account Executive · HiBob Toronto</p>
+    <h1 class="hero-name">
+      <span class="line1">ZAK</span>
+      <span class="line2">DALAL.</span>
+    </h1>
+    <p class="hero-role">
+      <strong>7 years closing SaaS deals.</strong><br />
+      Built for fast-moving, high-growth teams.
+    </p>
+    <p class="hero-tagline">
+      $4M+ ARR. 105% quota. 97% retention. 
+      I'm not looking for a job — I'm looking to help build the Toronto office.
+    </p>
+    <div class="hero-cta-row">
+      <a href="#proof" class="btn-primary">See the Proof</a>
+      <a href="#contact" class="btn-secondary">Get in Touch</a>
     </div>
   </div>
-</div>
-
-<!-- S2 -->
-<div class="slide cl" id="s2">
-  <div class="hd r1"><div class="ey">WHY HIBOB<span class="cur"></span></div><div class="sh">This isn't a fallback. It's the role I actually want.</div></div>
-  <div class="bd">
-    <div class="gr">
-      <div class="card"><div class="scan"></div><div class="cp"><div class="ci">🚀</div><div class="ct">The Product Sells Itself — If You Can Get In the Room</div><div class="cb">Bob is the clear modern alternative to legacy HRIS. Mid-market HR buyers already know the pain — I know how to find them, qualify hard, and close before they default to a cheaper legacy option.</div></div></div>
-      <div class="card am"><div class="scan"></div><div class="cp"><div class="ci">🏙️</div><div class="ct">Toronto Office Is Being Built Right Now</div><div class="cb">I'm 20 minutes from the office. I want to be in the room where the culture, playbook, and team dynamic get built — not parachuting in once it's done. That energy is what I thrive in.</div></div></div>
-      <div class="card"><div class="scan"></div><div class="cp"><div class="ci">🔥</div><div class="ct">Triple-Digit Growth Needs Hunters</div><div class="cb">HiBob has grown 69% in 2 years and is still accelerating. That pace needs AEs who self-generate 40–50% of pipeline, run sharp discovery, and close complex deals — exactly what I've been doing for 7 years.</div></div></div>
-      <div class="card am"><div class="scan"></div><div class="cp"><div class="ci">🏘️</div><div class="ct">People-First Culture Actually Matters to Me</div><div class="cb">HiBob's Best Workplace recognition for Inclusion and Mental Health isn't a tagline I'm using to get hired. Being in-person in that environment is a reason I want this specific role.</div></div></div>
-      <div class="card"><div class="scan"></div><div class="cp"><div class="ci">⚡</div><div class="ct">AI-Forward. Built This Deck to Prove It.</div><div class="cb">The way I sell already — Claude and ChatGPT open every day, AI-built proposals, smarter discovery prep. This presentation is the proof, not a talking point I memorized for the interview.</div></div></div>
-      <div class="card am"><div class="scan"></div><div class="cp"><div class="ci">📈</div><div class="ct">SMB HR Tech Is Replacing Legacy HRIS Right Now</div><div class="cb">100–500 employee companies are outgrowing BambooHR and spreadsheets today. The urgency is customer-driven. The deals are there. I know how to find them and close them.</div></div></div>
+  <div class="hero-right">
+    <p class="hero-stats-label">The Numbers</p>
+    <div class="hero-stat-item" style="opacity:0;animation:fadeUp 0.8s 1.5s forwards">
+      <span class="stat-number"><span class="count-stat orange" data-target="4" data-prefix="$" data-suffix="M+">$4M+</span></span>
+      <div class="stat-meta">
+        <span class="stat-label">ARR Portfolio</span>
+        <span class="stat-sub">Active managed accounts</span>
+      </div>
+    </div>
+    <div class="hero-stat-item" style="opacity:0;animation:fadeUp 0.8s 1.65s forwards">
+      <span class="stat-number"><span class="count-stat" data-target="105" data-suffix="%">105%</span></span>
+      <div class="stat-meta">
+        <span class="stat-label">Quota Attained</span>
+        <span class="stat-sub">Consecutive quarters</span>
+      </div>
+    </div>
+    <div class="hero-stat-item" style="opacity:0;animation:fadeUp 0.8s 1.8s forwards">
+      <span class="stat-number"><span class="count-stat" data-target="97" data-suffix="%">97%</span></span>
+      <div class="stat-meta">
+        <span class="stat-label">Retention Rate</span>
+        <span class="stat-sub">Across managed portfolio</span>
+      </div>
+    </div>
+    <div class="hero-stat-item" style="opacity:0;animation:fadeUp 0.8s 1.95s forwards">
+      <span class="stat-number"><span class="count-stat" data-target="40">40</span></span>
+      <div class="stat-meta">
+        <span class="stat-label">Locations Expanded</span>
+        <span class="stat-sub">Single pilot → full franchise</span>
+      </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- S3 -->
-<div class="slide cl" id="s3">
-  <div class="hd r1"><div class="ey">THE FIT<span class="cur"></span></div><div class="sh">Your JD. My track record. Line by line.</div></div>
-  <div class="bd">
-    <table>
-      <thead><tr><th class="th-r">HIBOB REQUIRES</th><th class="th-a">→</th><th class="th-d">ZAK DELIVERS</th></tr></thead>
-      <tbody>
-        <tr><td class="tr">1+ years closing experience in SaaS</td><td class="ta">→</td><td class="td">7 years — AppCare, App Growth, Quantum Mob, 1 At Bat, Biiibo. Six-figure close at every single company.</td></tr>
-        <tr><td class="tr">Deals $25K+ within 100+ employee orgs</td><td class="ta">→</td><td class="td">$2.2M enterprise close at AppCare navigating C-suite, CFO, COO simultaneously. $400K+ at Quantum Mob.</td></tr>
-        <tr><td class="tr">Self-generate 40–50% of pipeline</td><td class="ta">→</td><td class="td">Built outbound from zero as founding AE at App Growth. Majority of pipeline self-sourced at every role.</td></tr>
-        <tr><td class="tr">Accurate forecasting, hit revenue targets</td><td class="ta">→</td><td class="td">105% quota attainment. Salesforce pipeline owner at Biiibo — forecast leadership could actually bet on.</td></tr>
-        <tr><td class="tr">Fast-paced startup energy, no playbook</td><td class="ta">→</td><td class="td">Founding AE at App Growth — built from zero. I create process from chaos and still hit number.</td></tr>
-        <tr><td class="tr">In-office hybrid, Toronto metro</td><td class="ta">→</td><td class="td">North York — 20 min from downtown Toronto office. Hybrid is how I do my best work, not a constraint.</td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+<div class="diagonal-divider"></div>
 
-<!-- S4 -->
-<div class="slide cl" id="s4">
-  <div class="hd r1"><div class="ey">THE PROOF<span class="cur"></span></div><div class="sh">Six-figure closes. Every company. Every time.</div></div>
-  <div class="bd">
-    <div class="gr">
-      <div class="deal o"><div class="dbg">Best Closer<br>'17 &amp; '18</div><div class="dco">APPCARE</div><div class="dyr">2017 – 2018</div><div class="dnum">$2.2M</div><div class="drl"></div><div class="pb"><div class="pl">WHAT</div><div class="pt">Largest new logo close. Cold to contract.</div></div><div class="pb"><div class="pl">HOW</div><div class="pt">Cold outreach → custom deck → 2-month multi-stakeholder cycle: C-suite, Finance, Ops.</div></div><div class="pb"><div class="pl">THE WIN</div><div class="pt">Beat entrenched incumbent. Zero discounting. Named Best Closer two years running.</div></div></div>
-      <div class="deal a"><div class="dbg">100%+<br>Quota</div><div class="dco">APP GROWTH</div><div class="dyr">2019 – 2021</div><div class="dnum">$1M+</div><div class="drl"></div><div class="pb"><div class="pl">WHAT</div><div class="pt">Founding AE. Built everything from zero.</div></div><div class="pb"><div class="pl">HOW</div><div class="pt">No inbound. No process. Built the playbook and closed $1M+ with no pipeline to inherit.</div></div><div class="pb"><div class="pl">THE WIN</div><div class="pt">100%+ quota every year. Playbooks still in use after my tenure.</div></div></div>
-      <div class="deal o"><div class="dbg">Saved a<br>Churn Risk</div><div class="dco">QUANTUM MOB</div><div class="dyr">2021 – 2022</div><div class="dnum">$400K+</div><div class="drl"></div><div class="pb"><div class="pl">WHAT</div><div class="pt">Net-new and expansion across concurrent deals.</div></div><div class="pb"><div class="pl">HOW</div><div class="pt">Full-cycle from cold outreach through negotiation across diverse commercial verticals.</div></div><div class="pb"><div class="pl">THE WIN</div><div class="pt">Saved churning enterprise account by diagnosing root cause — not discounting to hold it.</div></div></div>
-      <div class="deal a"><div class="dbg">105%<br>Quota</div><div class="dco">BIIIBO</div><div class="dyr">2023 – Now</div><div class="dnum">$4M+</div><div class="drl"></div><div class="pb"><div class="pl">WHAT</div><div class="pt">$4M+ ARR across 60+ accounts. 1 pilot → 40 locations in 6 months.</div></div><div class="pb"><div class="pl">HOW</div><div class="pt">QBRs with every operator. Custom expansion proposal. Client used my deck to close remaining locations internally.</div></div><div class="pb"><div class="pl">THE WIN</div><div class="pt">97% retention. 105% quota. Forecast leadership could actually bet on.</div></div></div>
+<!-- WHY HIBOB -->
+<section id="why">
+  <div class="watermark" style="top: -3rem; right: -2rem;">WHY</div>
+  <div class="section-inner">
+    <p class="section-label reveal">Why HiBob</p>
+    <h2 class="section-title reveal reveal-delay-1">This Isn't a Fallback.<br /><span style="color:var(--orange)">It's the Role I Want.</span></h2>
+    <p class="section-subtitle reveal reveal-delay-2">Three reasons I'm pitching HiBob specifically — not a cover letter, an argument.</p>
+    <div class="why-grid">
+      <div class="why-card reveal reveal-delay-1">
+        <div class="why-card-number">01</div>
+        <h3 class="why-card-title">The Product Sells Itself — If You Can Get In the Room</h3>
+        <p class="why-card-body">Bob is the clear modern alternative to legacy HRIS platforms. Mid-market HR buyers already know the pain — I know how to find them, qualify hard, and close before they default to a cheaper legacy option.</p>
+      </div>
+      <div class="why-card reveal reveal-delay-2">
+        <div class="why-card-number">02</div>
+        <h3 class="why-card-title">Toronto Office Is Being Built Right Now</h3>
+        <p class="why-card-body">I'm 20 minutes from the office. I want to be in the room where the culture, the playbook, and the team dynamic get built — not parachuting in once it's done. That energy is what I thrive in.</p>
+      </div>
+      <div class="why-card reveal reveal-delay-3">
+        <div class="why-card-number">03</div>
+        <h3 class="why-card-title">Triple-Digit YoY Growth Needs Hunters</h3>
+        <p class="why-card-body">HiBob has grown 69% in 2 years and is still accelerating. That pace needs AEs who can self-generate 40–50% of pipeline, run sharp discovery, and close complex deals — exactly what I've been doing for 7 years.</p>
+      </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- S5 -->
-<div class="slide cl" id="s5">
-  <div class="hd r1"><div class="ey">BUILDING THE TORONTO OFFICE<span class="cur"></span></div><div class="sh">Not just filling a seat. Helping build the foundation.</div></div>
-  <div class="bd">
-    <div class="gr">
-      <div class="card"><div class="scan"></div><div class="cp"><div class="ci">🔍</div><div class="ct">Pipeline from Day 1</div><div class="cb">I self-source 40–50%+ of pipeline. LinkedIn Sales Navigator, cold email sequences, mid-market HR community events in Toronto. I don't wait for inbound.</div></div></div>
-      <div class="card am"><div class="scan"></div><div class="cp"><div class="ci">🤝</div><div class="ct">Network Already in Market</div><div class="cb">7 years of Toronto-market relationships across retail, professional services, and tech. Warm introductions accelerate pipeline in a new office's early months.</div></div></div>
-      <div class="card"><div class="scan"></div><div class="cp"><div class="ci">📈</div><div class="ct">Playbook Contributor</div><div class="cb">As founding AE at App Growth, I built prospecting playbooks from scratch. I'll document what works and share it with the next hire to compress the ramp curve.</div></div></div>
-      <div class="card am"><div class="scan"></div><div class="cp"><div class="ci">🏆</div><div class="ct">Proven at Startups — Twice</div><div class="cb">I've been the 1st or founding AE twice. I know how to operate without guardrails, create process from chaos, and still hit number while the team figures itself out around me.</div></div></div>
-      <div class="card"><div class="scan"></div><div class="cp"><div class="ci">🏢</div><div class="ct">In the Office. Not Tolerating Hybrid.</div><div class="cb">In-person is how I operate at full power. I think faster with the team. North York is 20 minutes from the office. I'll be there every day.</div></div></div>
-      <div class="card am"><div class="scan"></div><div class="cp"><div class="ci">🤖</div><div class="ct">AI-Native Seller</div><div class="cb">Claude and ChatGPT open on my screen every day — research, discovery prep, smarter proposals faster. This deck is the proof, not a talking point.</div></div></div>
+<div class="diagonal-divider-reverse" style="background: var(--bg2);"></div>
+
+<!-- THE FIT -->
+<section id="fit">
+  <div class="watermark" style="bottom: -3rem; left: -2rem;">FIT</div>
+  <div class="section-inner">
+    <p class="section-label reveal">Requirements vs. Reality</p>
+    <h2 class="section-title reveal reveal-delay-1">The <span style="color:var(--orange)">Fit.</span></h2>
+    <p class="section-subtitle reveal reveal-delay-2">What HiBob needs — what Zak brings. Line by line.</p>
+    <div class="fit-table-wrapper reveal reveal-delay-3">
+      <table class="fit-table">
+        <thead>
+          <tr>
+            <th>HiBob Requirement</th>
+            <th style="text-align:center;">✓</th>
+            <th>Zak's Proof</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1+ yrs closing experience in SaaS</td>
+            <td style="text-align:center;"><span class="check">✓</span></td>
+            <td>7 years — AppCare, App Growth, Quantum Mob, 1 At Bat, Biiibo</td>
+          </tr>
+          <tr>
+            <td>Deals $25K+ within 100+ employee orgs</td>
+            <td style="text-align:center;"><span class="check">✓</span></td>
+            <td>$2.2M enterprise close at AppCare; $400K+ at Quantum Mob</td>
+          </tr>
+          <tr>
+            <td>Self-generate 40–50% of pipeline</td>
+            <td style="text-align:center;"><span class="check">✓</span></td>
+            <td>Majority self-sourced via LinkedIn, cold email, and market events</td>
+          </tr>
+          <tr>
+            <td>Accurate forecasting, hit revenue targets</td>
+            <td style="text-align:center;"><span class="check">✓</span></td>
+            <td>105% quota attainment; Salesforce pipeline owner at Biiibo</td>
+          </tr>
+          <tr>
+            <td>Fast-paced startup energy</td>
+            <td style="text-align:center;"><span class="check">✓</span></td>
+            <td>Founding AE at App Growth — built from zero, no playbook</td>
+          </tr>
+          <tr>
+            <td>Proposal & demo delivery</td>
+            <td style="text-align:center;"><span class="check">✓</span></td>
+            <td>QBRs, ABRs, tailored demo frameworks across every role</td>
+          </tr>
+          <tr>
+            <td>In-office hybrid (Toronto)</td>
+            <td style="text-align:center;"><span class="check">✓</span></td>
+            <td>North York — 20 min from downtown Toronto office</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
-</div>
+</section>
 
-<!-- S6 -->
-<div class="slide cl" id="s6">
-  <div class="hd r1"><div class="ey">THE PLAN<span class="cur"></span></div><div class="sh">90 days to first close.</div></div>
-  <div class="bd">
-    <div class="phs">
-      <div class="ph o" data-n="1">
-        <div class="phl">DAYS 1–30</div>
-        <div class="pht">Learn the Product.<br>Own the ICP.</div>
-        <div class="phr"></div>
-        <ul class="phl2">
-          <li>Master Bob's full HCM suite — onboarding, performance, compensation, payroll — and competitive positioning vs. BambooHR, Rippling, Workday</li>
-          <li>Shadow 10+ discovery calls and demos with senior AEs to absorb Toronto market nuances and buyer language</li>
-          <li>Build ICP target list: 100–500 employee companies in retail, professional services, and finance in the GTA</li>
-          <li>Get certified on HiBob sales methodology and Salesforce CRM setup from day one</li>
+<div class="diagonal-divider" style="background: var(--bg2);"></div>
+
+<!-- THE PROOF -->
+<section id="proof">
+  <div class="watermark" style="top: -2rem; right: -1rem;">PROOF</div>
+  <div class="section-inner">
+    <p class="section-label reveal">Work History</p>
+    <h2 class="section-title reveal reveal-delay-1">Six-Figure Closes<br /><span style="color:var(--orange)">At Every Company.</span></h2>
+    <p class="section-subtitle reveal reveal-delay-2">No exceptions. No asterisks.</p>
+    <div class="proof-grid reveal reveal-delay-3">
+      <div class="proof-card">
+        <span class="proof-card-tag">New Logo</span>
+        <div class="proof-card-header">
+          <div class="proof-company">AppCare</div>
+          <div class="proof-period">2017–2018</div>
+        </div>
+        <div class="proof-big-stat">$2.2M</div>
+        <div class="proof-stat-label">Enterprise Close</div>
+        <div class="proof-how-label">How</div>
+        <p class="proof-how-text">Cold outreach → custom competitive analysis deck → 2-month multi-stakeholder cycle with C-suite, board, and ops sign-off.</p>
+        <div class="proof-result-label">Result</div>
+        <p class="proof-result-text">Won Best Closer Award 2017 & 2018. Largest deal in company history at the time.</p>
+      </div>
+      <div class="proof-card">
+        <span class="proof-card-tag">Portfolio Built</span>
+        <div class="proof-card-header">
+          <div class="proof-company">App Growth</div>
+          <div class="proof-period">2019–2021</div>
+        </div>
+        <div class="proof-big-stat">$1M+</div>
+        <div class="proof-stat-label">Quota, 2 Consecutive Years</div>
+        <div class="proof-how-label">How</div>
+        <p class="proof-how-text">Founding AE — built pipeline from zero. 100%+ quota two years running.</p>
+        <div class="proof-result-label">Result</div>
+        <p class="proof-result-text">Developed outbound playbooks still in use after my tenure.</p>
+      </div>
+      <div class="proof-card">
+        <span class="proof-card-tag">Net-New + Expansion</span>
+        <div class="proof-card-header">
+          <div class="proof-company">Quantum Mob</div>
+          <div class="proof-period">2021–2022</div>
+        </div>
+        <div class="proof-big-stat">$400K+</div>
+        <div class="proof-stat-label">Full-Cycle Closes</div>
+        <div class="proof-how-label">How</div>
+        <p class="proof-how-text">Full-cycle from cold outreach through negotiation and close across diverse commercial verticals.</p>
+        <div class="proof-result-label">Result</div>
+        <p class="proof-result-text">Saved a churning enterprise account by diagnosing the real issue vs. discounting.</p>
+      </div>
+      <div class="proof-card">
+        <span class="proof-card-tag">1 Account Expanded</span>
+        <div class="proof-card-header">
+          <div class="proof-company">Biiibo</div>
+          <div class="proof-period">2023–Present</div>
+        </div>
+        <div class="proof-big-stat">40</div>
+        <div class="proof-stat-label">Locations from 1 Pilot</div>
+        <div class="proof-how-label">How</div>
+        <p class="proof-how-text">Onboarded single pilot → ran location-level QBRs → built expansion proposal the client presented internally.</p>
+        <div class="proof-result-label">Result</div>
+        <p class="proof-result-text">$4M+ ARR portfolio. 97% retention. 105% quota every quarter.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="diagonal-divider-reverse" style="background: var(--bg2);"></div>
+
+<!-- BUILDING THE OFFICE -->
+<section id="build">
+  <div class="watermark" style="top: -2rem; right: -1rem;">BUILD</div>
+  <div class="section-inner">
+    <p class="section-label reveal">Value Add</p>
+    <h2 class="section-title reveal reveal-delay-1">Not Just Filling a Seat.<br /><span style="color:var(--orange)">Building the Foundation.</span></h2>
+    <p class="section-subtitle reveal reveal-delay-2">What I bring to a day-one Toronto hire beyond hitting quota.</p>
+    <div class="build-grid">
+      <div class="build-item reveal reveal-delay-1">
+        <div class="build-icon">
+          <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <div class="build-title">Pipeline from Day 1</div>
+        <p class="build-body">I self-source 40–50%+ of pipeline. LinkedIn Sales Navigator, cold email sequences, eCommerce and mid-market HR events in Toronto. I don't wait for inbound.</p>
+      </div>
+      <div class="build-item reveal reveal-delay-2">
+        <div class="build-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        </div>
+        <div class="build-title">Network Already in Market</div>
+        <p class="build-body">7 years of Toronto-market relationships across retail, professional services, and tech. Warm introductions accelerate pipeline in a new office's early months.</p>
+      </div>
+      <div class="build-item reveal reveal-delay-3">
+        <div class="build-icon">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <div class="build-title">Playbook Contributor</div>
+        <p class="build-body">As founding AE at App Growth, I built prospecting playbooks from scratch. I'll document what works, share it with the next hire, and help compress the ramp curve.</p>
+      </div>
+      <div class="build-item reveal reveal-delay-1">
+        <div class="build-icon">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="build-title">Culture Carrier</div>
+        <p class="build-body">HiBob's Best Workplace recognition for Inclusion and Mental Health matters to me. In-person presence means I'm an active contributor to that culture — not just a remote number.</p>
+      </div>
+      <div class="build-item reveal reveal-delay-2">
+        <div class="build-icon">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="build-title">Proven at Startups</div>
+        <p class="build-body">I've been the 1st or founding AE twice. I know how to operate without guardrails, create process from chaos, and still hit number while the team figures itself out.</p>
+      </div>
+      <div class="build-item reveal reveal-delay-3">
+        <div class="build-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="15" x2="13" y2="15"/></svg>
+        </div>
+        <div class="build-title">AI-Native Seller</div>
+        <p class="build-body">I use Claude, ChatGPT, and AI sales tools daily to research accounts, prep for discovery, and build smarter proposals faster. This site is proof — built specifically for this application.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="diagonal-divider" style="background: var(--bg2);"></div>
+
+<!-- 90 DAYS -->
+<section id="days">
+  <div class="watermark" style="top: -2rem; right: -2rem; font-size: clamp(6rem, 15vw, 14rem);">90 DAYS</div>
+  <div class="section-inner">
+    <p class="section-label reveal">First 90 Days</p>
+    <h2 class="section-title reveal reveal-delay-1">How I Ramp,<br /><span style="color:var(--orange)">Build, and Close.</span></h2>
+    <p class="section-subtitle reveal reveal-delay-2">Not a framework. A plan.</p>
+    <div class="days-grid reveal reveal-delay-3">
+      <div class="days-phase">
+        <div class="days-phase-header">
+          <div class="days-phase-tag">Days 1–30</div>
+          <div class="days-phase-title">Learn.</div>
+          <div class="days-phase-sub">Own the Product.</div>
+        </div>
+        <ul class="days-list">
+          <li>Master Bob's full HCM suite — onboarding, performance, compensation, payroll modules — and competitive positioning vs. BambooHR, Rippling, Workday</li>
+          <li>Shadow 10+ discovery calls and demos with senior AEs to absorb Toronto market nuances</li>
+          <li>Build ICP target list: 100–500 employee companies in retail, professional services, and finance in GTA</li>
+          <li>Get certified on HiBob sales methodology and Salesforce CRM setup</li>
         </ul>
       </div>
-      <div class="ph a" data-n="2">
-        <div class="phl">DAYS 31–60</div>
-        <div class="pht">Build Pipeline.<br>Run Sharp Discovery.</div>
-        <div class="phr"></div>
-        <ul class="phl2">
-          <li>Launch outbound to top 50 ICP targets — LinkedIn sequences, cold email, referrals from existing Toronto network</li>
-          <li>Book 10–15 discovery calls — qualify hard on headcount, current HRIS pain, budget cycle, and urgency before advancing</li>
+      <div class="days-phase">
+        <div class="days-phase-header">
+          <div class="days-phase-tag">Days 31–60</div>
+          <div class="days-phase-title">Prospect.</div>
+          <div class="days-phase-sub">Run Discovery.</div>
+        </div>
+        <ul class="days-list">
+          <li>Launch outbound to top 50 ICP targets — LinkedIn sequences, cold email, referral from existing network</li>
+          <li>Book 10–15 discovery calls; qualify hard on headcount, current HRIS pain, budget cycle, and urgency</li>
           <li>Deliver first 5 tailored Bob demos — built around each prospect's stated pain, not a generic walkthrough</li>
-          <li>Clean Salesforce from day one: stage, stakeholder map, next steps, close date updated live after every interaction</li>
+          <li>Keep Salesforce clean from day one: stage, stakeholder map, next steps, close date updated live</li>
         </ul>
       </div>
-      <div class="ph o" data-n="3">
-        <div class="phl">DAYS 61–90</div>
-        <div class="pht">Demo. Build Champions.<br>Close.</div>
-        <div class="phr"></div>
-        <ul class="phl2">
-          <li>Progress top 3 deals to proposal stage — build ROI models in headcount savings, retention impact, HRIS admin hours saved</li>
-          <li>Multi-thread every live deal: HR Director AND CFO champions with separate value narratives for each</li>
-          <li>Win first logo. Document what worked and share the playbook with the next Toronto AE hire</li>
+      <div class="days-phase">
+        <div class="days-phase-header">
+          <div class="days-phase-tag">Days 61–90</div>
+          <div class="days-phase-title">Demo.</div>
+          <div class="days-phase-sub">Build Champions. Close.</div>
+        </div>
+        <ul class="days-list">
+          <li>Progress top 3 deals to proposal stage — build ROI models in headcount savings and retention impact</li>
+          <li>Multi-thread every live deal: HR Director AND CFO champions with separate value narratives</li>
+          <li>Win first logo — document what worked and share the playbook with the next Toronto AE hire</li>
           <li>Hit or exceed 30-day activity and pipeline metrics — ready to ramp to full quota in month 4</li>
         </ul>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- S7 -->
-<div class="slide" id="s7">
-  <div class="rb"></div><div class="bb"></div>
-  <div class="qt r1">"I don't just want the job.<br>I want to <span class="hi">help build<br>the Toronto office.</span>"</div>
-  <div class="qr r2"></div>
-  <div class="cst">
-    <div class="cs o r3"><div class="csv">Every Company</div><div class="csl">Six-figure deal closed — AppCare, App Growth, Quantum Mob, Biiibo. No exceptions, no asterisks.</div></div>
-    <div class="cs a r4"><div class="csv">Already in Toronto</div><div class="csl">North York, 20 min from the office. Hybrid is how I do my best work — not a constraint I tolerate.</div></div>
-    <div class="cs o r5"><div class="csv">AI-Forward</div><div class="csl">This deck is the proof. I sell the way your top performers operate — AI tools in hand, every day.</div></div>
+<div class="diagonal-divider-reverse" style="background: var(--bg2);"></div>
+
+<!-- CTA / CONTACT -->
+<section id="contact">
+  <div class="watermark" style="top: 0; left: -2rem;">CLOSE</div>
+  <div class="contact-inner">
+    <div class="contact-left reveal">
+      <blockquote class="contact-quote">
+        "I don't just want the job.<br />
+        I want to help build the<br />
+        <span class="orange">Toronto office."</span>
+      </blockquote>
+    </div>
+    <div class="contact-right reveal reveal-delay-2">
+      <div class="contact-badges">
+        <div class="contact-badge">
+          <div class="contact-badge-dot"></div>
+          <span class="contact-badge-text">Six-figure deal closed at every company — AppCare, App Growth, Quantum Mob, Biiibo.</span>
+        </div>
+        <div class="contact-badge">
+          <div class="contact-badge-dot"></div>
+          <span class="contact-badge-text">20 min from the office. Hybrid is how I do my best work — not a constraint I tolerate.</span>
+        </div>
+        <div class="contact-badge">
+          <div class="contact-badge-dot"></div>
+          <span class="contact-badge-text">This site is proof. I sell the way your top performers operate.</span>
+        </div>
+      </div>
+      <div class="contact-links">
+        <a href="mailto:saketd86@gmail.com" class="contact-link">saketd86@gmail.com</a>
+        <a href="tel:2508029393" class="contact-link">250-802-9393</a>
+        <a href="https://linkedin.com/in/zakdalal" target="_blank" class="contact-link">linkedin.com/in/zakdalal</a>
+      </div>
+    </div>
   </div>
-  <div class="ct r6">Zak Dalal &nbsp;·&nbsp; 250-802-9393 &nbsp;·&nbsp; saketd86@gmail.com &nbsp;·&nbsp; linkedin.com/in/zakdalal</div>
-</div>
+</section>
 
-</div><!-- /deck -->
-
-<!-- NAV -->
-<div id="ndots"></div>
-<div id="narr">
-  <button class="na" id="np">&#8592;</button>
-  <button class="na" id="nn">&#8594;</button>
-</div>
-<div id="nnum">01 / 07</div>
+<footer>
+  <span class="footer-name">ZAK<span>.</span>DALAL</span>
+  <span class="footer-note">SMB AE · HiBob Toronto · Built for this role</span>
+</footer>
 
 <script>
-/* ───────────────────────────────
-   BOOT
-─────────────────────────────── */
-(function(){
-  const fill=document.getElementById('bf');
-  const lines=document.querySelectorAll('.bl');
-  const boot=document.getElementById('boot');
-  const prog=document.getElementById('prog');
-  let pct=0;
-  const tick=setInterval(()=>{
-    pct=Math.min(pct+(2+Math.random()*3),100);
-    fill.style.width=pct+'%';
-    const show=Math.floor((pct/100)*lines.length);
-    for(let i=0;i<show;i++) lines[i].style.opacity='1';
-    if(pct>=100){
-      clearInterval(tick);
-      setTimeout(()=>{
-        boot.style.opacity='0';
-        setTimeout(()=>{
-          boot.style.display='none';
-          prog.style.width='14.28%';
-          const nm=document.querySelector('#s1 .nm');
-          nm.classList.add('glitch');
-          counters();
-        },400);
-      },300);
-    }
-  },40);
-})();
-
-/* ───────────────────────────────
-   PARTICLES
-─────────────────────────────── */
-(function(){
-  const c=document.getElementById('cv');
-  const x=c.getContext('2d');
-  const resize=()=>{c.width=innerWidth;c.height=innerHeight;};
-  resize(); addEventListener('resize',resize);
-  const P=[];let f=0;
-  const add=()=>P.push({
-    x:Math.random()*c.width, y:c.height+4,
-    vx:(Math.random()-.5)*.5, vy:-(0.3+Math.random()*.7),
-    life:1, d:0.003+Math.random()*.004,
-    r:.6+Math.random()*1.2, am:Math.random()<.3
+  // CURSOR
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx - 5 + 'px';
+    cursor.style.top = my - 5 + 'px';
   });
-  const loop=()=>{
-    x.clearRect(0,0,c.width,c.height);
-    if(f++%3===0) add();
-    for(let i=P.length-1;i>=0;i--){
-      const p=P[i]; p.x+=p.vx; p.y+=p.vy; p.life-=p.d;
-      if(p.life<=0||p.y<-8){P.splice(i,1);continue;}
-      x.beginPath(); x.arc(p.x,p.y,p.r,0,Math.PI*2);
-      x.fillStyle=p.am?`rgba(155,93,229,${p.life*.4})`:`rgba(255,92,106,${p.life*.35})`;
-      x.shadowColor=p.am?'rgba(155,93,229,.4)':'rgba(255,92,106,.4)';
-      x.shadowBlur=3; x.fill();
-    }
-    x.shadowBlur=0; requestAnimationFrame(loop);
-  };
-  loop();
-})();
-
-/* ───────────────────────────────
-   DATA STREAM
-─────────────────────────────── */
-(function(){
-  const el=document.getElementById('ds');
-  const ch='0123456789ABCDEF$%#';
-  for(let i=0;i<3;i++){
-    const d=document.createElement('div'); d.className='dsc';
-    let t=''; for(let j=0;j<70;j++) t+=ch[Math.floor(Math.random()*ch.length)]+'\n';
-    d.textContent=t;
-    d.style.animationDuration=(7+i*3)+'s';
-    d.style.animationDelay=(-i*2)+'s';
-    el.appendChild(d);
+  function animRing() {
+    rx += (mx - rx - 18) * 0.15;
+    ry += (my - ry - 18) * 0.15;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animRing);
   }
-})();
-
-/* ───────────────────────────────
-   CLOCK
-─────────────────────────────── */
-(function(){
-  const el=document.getElementById('clk');
-  const t=()=>{const n=new Date();el.textContent=[n.getHours(),n.getMinutes(),n.getSeconds()].map(v=>String(v).padStart(2,'0')).join(':');};
-  t(); setInterval(t,1000);
-})();
-
-/* ───────────────────────────────
-   COUNTERS
-─────────────────────────────── */
-function counters(){
-  document.querySelectorAll('[data-val]').forEach(el=>{
-    const end=parseFloat(el.dataset.val);
-    const pfx=el.dataset.pfx||'';
-    const sfx=el.dataset.sfx||'';
-    const dec=end%1!==0;
-    const dur=900; const t0=performance.now();
-    const frame=now=>{
-      const t=Math.min((now-t0)/dur,1);
-      const e=1-Math.pow(1-t,3);
-      el.textContent=pfx+(dec?(e*end).toFixed(1):Math.floor(e*end))+sfx;
-      if(t<1) requestAnimationFrame(frame);
-    };
-    requestAnimationFrame(frame);
+  animRing();
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.transform = 'scale(2.5)'; ring.style.width = '60px'; ring.style.height = '60px'; });
+    el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; ring.style.width = '36px'; ring.style.height = '36px'; });
   });
-}
 
-/* ───────────────────────────────
-   SLIDE ENGINE
-─────────────────────────────── */
-const slides=Array.from(document.querySelectorAll('.slide'));
-const N=slides.length;
-const prog=document.getElementById('prog');
-const nnum=document.getElementById('nnum');
-const ndots=document.getElementById('ndots');
-let cur=0, lock=false;
-const dots=[];
+  // SCROLL PROGRESS
+  const prog = document.getElementById('scrollProgress');
+  window.addEventListener('scroll', () => {
+    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    prog.style.width = pct + '%';
+  });
 
-slides.forEach((_,i)=>{
-  const d=document.createElement('div');
-  d.className='nd'+(i===0?' on':'');
-  d.onclick=()=>go(i);
-  ndots.appendChild(d);
-  dots.push(d);
-});
+  // REVEAL ON SCROLL
+  const reveals = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => obs.observe(el));
 
-function go(to){
-  if(lock||to===cur) return;
-  lock=true;
-  const fwd=to>cur;
-  const from=slides[cur];
-  const next=slides[to];
-  from.classList.remove('active','enter-fwd','enter-bwd');
-  from.style.display='none';
-  dots[cur].classList.remove('on');
-  cur=to;
-  dots[cur].classList.add('on');
-  nnum.textContent=String(cur+1).padStart(2,'0')+' / 07';
-  prog.style.width=((cur+1)/N*100)+'%';
-  next.style.display='flex';
-  next.classList.remove('enter-fwd','enter-bwd','active');
-  void next.offsetWidth;
-  next.classList.add('active', fwd?'enter-fwd':'enter-bwd');
-  if(cur===0){
-    const nm=document.querySelector('#s1 .nm');
-    nm.classList.remove('glitch');
-    void nm.offsetWidth;
-    nm.classList.add('glitch');
-    counters();
+  // NUMBER COUNTER
+  function animateCount(el) {
+    const target = parseInt(el.dataset.target);
+    const prefix = el.dataset.prefix || '';
+    const suffix = el.dataset.suffix || '';
+    let start = 0;
+    const duration = 1800;
+    const startTime = performance.now();
+    function update(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(eased * target);
+      el.textContent = prefix + current + suffix;
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
   }
-  setTimeout(()=>{lock=false;},420);
-}
 
-document.getElementById('nn').onclick=()=>go((cur+1)%N);
-document.getElementById('np').onclick=()=>go((cur-1+N)%N);
-document.addEventListener('keydown',e=>{
-  if(['ArrowRight','ArrowDown',' '].includes(e.key)){e.preventDefault();go((cur+1)%N);}
-  if(['ArrowLeft','ArrowUp'].includes(e.key)){e.preventDefault();go((cur-1+N)%N);}
-});
-let tx=0;
-document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
-document.addEventListener('touchend',e=>{
-  const dx=e.changedTouches[0].clientX-tx;
-  if(Math.abs(dx)>45) go(dx<0?(cur+1)%N:(cur-1+N)%N);
-});
+  const statObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && e.target.dataset.target) {
+        animateCount(e.target);
+        statObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.count-stat[data-target]').forEach(el => statObs.observe(el));
 </script>
 </body>
 </html>
